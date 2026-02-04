@@ -7,11 +7,8 @@ export const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
-
  // Validate password strength
- //Minimum 6 characters
  
-
 export const isValidPassword = (password) => {
   return typeof password === 'string' && password.length >= 6;
 };
