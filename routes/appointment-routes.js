@@ -1,28 +1,20 @@
 import express from 'express';
 import {
-  bookAppointment,
-  cancelAppointment
-} from '../controllers/appointment.controller.js';
+  createAppointment,
+  viewClientAppointments,
+  viewProviderAppointments,
+  cancelAppointment,
+} from '../controllers/appointment-controller.js';
 
-import { authenticate } from '../middleware/auth.middleware.js';
-import { authorizeRole } from '../middleware/role.middleware.js';
+import { authenticate } from '../middlewares/auth-middleware.js';
+import { authorizeRole } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
-// Client books an appointment
-router.post(
-  '/',
-  authenticate,
-  authorizeRole('client'),
-  bookAppointment
-);
-
-// Client cancels appointment
-router.patch(
-  '/:id/cancel',
-  authenticate,
-  authorizeRole('client'),
-  cancelAppointment
-);
+router.post('/', authenticate, authorizeRole('client'), createAppointment);
+router.get('/client', authenticate, authorizeRole('client'), viewClientAppointments);
+router.get('/provider', authenticate, authorizeRole('provider'), viewProviderAppointments);
+router.patch('/:id/cancel', authenticate, cancelAppointment);
 
 export default router;
+

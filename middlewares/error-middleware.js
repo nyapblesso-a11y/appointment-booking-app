@@ -13,7 +13,7 @@ export const authenticate = (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded; // { id, role }
+    req.user = decoded; 
     next();
   } catch (error) {
     return res.status(401).json({

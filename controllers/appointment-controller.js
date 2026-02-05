@@ -1,49 +1,49 @@
 import {
-  createAppointment,
-  getAppointmentsByClient,
-  getAppointmentsByProvider,
-  cancelAppointment,
-} from '../services/appointment.service.js';
+  bookAppointment,
+  getClientAppointments,
+  getProviderAppointments,
+  cancelUserAppointment,
+} from '../services/appointment-services.js';
 
-// Client books appointment
-export const bookAppointment = async (req, res, next) => {
+// POST /app
+export const createAppointment = async (req, res, next) => {
   try {
-    const { slot_id } = req.body;
-    if (!slot_id) return res.status(400).json({ message: 'Slot ID required' });
+    const { slotId } = req.body;
+    if (!slotId) return res.status(400).json({ message: 'slotId is required' });
 
-    const appointment = await createAppointment(req.user.id, slot_id);
-    res.status(201).json(appointment);
+    const appointment = await bookAppointment(req.user.id, slotId);
+    res.status(201).json({ success: true, appointment });
   } catch (error) {
     next(error);
   }
 };
 
-// Client views their appointments
-export const myAppointments = async (req, res, next) => {
+// GET /app/client
+export const viewClientAppointments = async (req, res, next) => {
   try {
-    const appointments = await getAppointmentsByClient(req.user.id);
-    res.json(appointments);
+    const appointments = await getClientAppointments(req.user.id);
+    res.json({ success: true, appointments });
   } catch (error) {
     next(error);
   }
 };
 
-// Provider views appointments for their slots
-export const providerAppointments = async (req, res, next) => {
+// GET /app/provider
+export const viewProviderAppointments = async (req, res, next) => {
   try {
-    const appointments = await getAppointmentsByProvider(req.user.id);
-    res.json(appointments);
+    const appointments = await getProviderAppointments(req.user.id);
+    res.json({ success: true, appointments });
   } catch (error) {
     next(error);
   }
 };
 
-// Cancel appointment
-export const cancel = async (req, res, next) => {
+// PATCH /app/:id/cancel
+export const cancelAppointment = async (req, res, next) => {
   try {
-    const { appointmentId } = req.params;
-    const appointment = await cancelAppointment(req.user.id, appointmentId);
-    res.json({ message: 'Appointment canceled', appointment });
+    const { id } = req.params;
+    const appointment = await cancelUserAppointment(req.user.id, id, req.user.role);
+    res.json({ success: true, message: 'Appointment canceled', appointment });
   } catch (error) {
     next(error);
   }

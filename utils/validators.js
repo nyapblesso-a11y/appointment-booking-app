@@ -1,30 +1,15 @@
-
-// Validate email format
- 
+// Check if email is valid
 export const isValidEmail = (email) => {
-  const emailRegex =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
 };
 
- // Validate password strength
- 
+// Check if password is strong enough (min 6 chars)
 export const isValidPassword = (password) => {
-  return typeof password === 'string' && password.length >= 6;
+  return password && password.length >= 6;
 };
 
-// Validate role
+// Check if role is valid
 export const isValidRole = (role) => {
   return ['client', 'provider'].includes(role);
-};
-
-// Validate appointment status
-export const isValidAppointmentStatus = (status) => {
-  return ['booked', 'canceled'].includes(status);
-};
-
-// Validate time slot input
-export const isValidTimeSlot = (startTime, endTime) => {
-  if (!startTime || !endTime) return false;
-  return new Date(startTime) < new Date(endTime);
 };

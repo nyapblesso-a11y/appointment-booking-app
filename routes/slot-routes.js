@@ -1,28 +1,18 @@
 import express from 'express';
 import {
-  createSlot,
-  getProviderSlots
-} from '../controllers/slot.controller.js';
+  createTimeSlot,
+  getProviderSlots,
+} from '../controllers/slot-controller.js';
 
-import { authenticate } from '../middleware/auth.middleware.js';
-import { authorizeRole } from '../middleware/role.middleware.js';
+import { authenticate } from '../middlewares/auth-middleware.js';
+import { authorizeRole } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
-// Provider creates time slots
-router.post(
-  '/',
-  authenticate,
-  authorizeRole('provider'),
-  createSlot
-);
+// Provider creates a time slot
+router.post('/', authenticate, authorizeRole('provider'), createTimeSlot);
 
-// Provider views their slots
-router.get(
-  '/',
-  authenticate,
-  authorizeRole('provider'),
-  getProviderSlots
-);
+// Client views available slots for a provider
+router.get('/:providerId', authenticate, getProviderSlots);
 
 export default router;
