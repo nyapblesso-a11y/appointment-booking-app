@@ -8,10 +8,10 @@ import {
 // POST /app
 export const createAppointment = async (req, res, next) => {
   try {
-    const { slotId } = req.body;
-    if (!slotId) return res.status(400).json({ message: 'slotId is required' });
+    const { slot_id } = req.body;
+    if (!slot_id) return res.status(400).json({ message: 'slotId is required' });
 
-    const appointment = await bookAppointment(req.user.id, slotId);
+    const appointment = await bookAppointment(req.user.id, slot_id);
     res.status(201).json({ success: true, appointment });
   } catch (error) {
     next(error);

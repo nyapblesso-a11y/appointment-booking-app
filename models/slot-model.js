@@ -1,16 +1,21 @@
 import pool from '../config/db.js';
 
 // Create a new slot for a provider
-export const createSlot = async (provider_id, start_time, end_time) => {
+export const createSlot = async ({ provider_id, start_time, end_time }) => {
   const query = `
     INSERT INTO time_slots (provider_id, start_time, end_time)
     VALUES ($1, $2, $3)
     RETURNING *;
   `;
-  const { rows } = await pool.query(query, [provider_id, start_time, end_time]);
+
+  const { rows } = await pool.query(query, [
+    provider_id,
+    start_time,
+    end_time
+  ]);
+
   return rows[0];
 };
-
 // Get all slots for a provider
 export const getSlotsByProviderId = async (provider_id) => {
   const query = `
