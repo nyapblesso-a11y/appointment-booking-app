@@ -9,6 +9,8 @@ import deb from "debug";
 const debug = deb("booking-appointment-services:server");
 import http from "http";
 import { connectDB } from "../config/db.js";
+import { Server } from "socket.io";
+import { initSockets } from "../sockets/socket.js";
 /**
  * Get port from environment and store in Express.
  */
@@ -20,8 +22,16 @@ app.set("port", port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 
+
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  }
+});
+
+initSockets(io);
 /**
  * Listen on provided port, on all network interfaces.
  */
