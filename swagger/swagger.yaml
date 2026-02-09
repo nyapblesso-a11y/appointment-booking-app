@@ -1,0 +1,204 @@
+openapi: 5.0.1
+info:
+  title: appointment_booking_service
+  description: Backend service for scheduling appointments with real-time notifications
+  version: 0.0.0
+
+servers:
+  - url: http://localhost:3000
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [client, provider]
+
+    Slot:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider_id:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        is_booked:
+          type: boolean
+
+    Appointment:
+      type: object
+      properties:
+        id:
+          type: integer
+        client_id:
+          type: integer
+        provider_id:
+          type: integer
+        slot_id:
+          type: integer
+        status:
+          type: string
+          enum: [booked, canceled]
+        created_at:
+          type: string
+          format: date-time
+
+paths:
+
+  /auth/register:
+    post:
+      summary: Register new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [client, provider]
+                service_name:
+                  type: string
+      responses:
+        201:
+          description: User registered successfully
+        409:
+          description: Email already exists
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Returns JWT token
+
+  /slot:
+    post:
+      summary: Create time slot (Provider only)
+      tags: [Slots]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start_time, end_time]
+              properties:
+                start_time:
+                  type: string
+                  format: date-time
+                end_time:
+                  type: string
+                  format: date-time
+      responses:
+        201:
+          description: Slot created
+
+    get:
+      summary: Get provider slots
+      tags: [Slots]
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of slots
+
+  /appointments:
+    post:
+      summary: Book appointment (Client only)
+      tags: [Appointments]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slotId]
+              properties:
+                slotId:
+                  type: integer
+      responses:
+        201:
+          description: Appointment booked
+
+  /appointments/client:
+    get:
+      summary: View client appointments
+      tags: [Appointments]
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Client appointments list
+
+  /appointments/provider:
+    get:
+      summary: View provider appointments
+      tags: [Appointments]
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: Provider appointments list
+
+  /appointments/{id}/cancel:
+    patch:
+      summary: Cancel appointment
+      tags: [Appointments]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Appointment canceled

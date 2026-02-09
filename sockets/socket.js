@@ -1,51 +1,31 @@
-let io;
+let onlineUsers = new Map(); 
 
-export const initSockets = (serverIO) => {
-  io = serverIO;
-
+export const registerSocket = (io) => {
   io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
 
-    socket.on('join', (userId) => {
-      socket.join(`user_${userId}`);
-      console.log(`User ${userId} joined room user_${userId}`);
+    socket.on('register', (userId) => {
+      onlineUsers.set(userId, socket.id);
+      console.log(`User ${userId} registered`);
     });
 
     socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
+      for (let [userId, sockId] of onlineUsers.entries()) {
+        if (sockId === socket.id) {
+          onlineUsers.delete(userId);
+          break;
+        }
+      }
     });
   });
 };
 
+export const sendNotification = (io, userId, message) => {
+  const socketId = onlineUsers.get(userId);
 
-// login notification
-
-export const emitLogin = (user) => {
-    io.to(`user_${user.id}`).emit('login_notification', {
-        message: `${user.name} logged in`,
-        userId: user.id,
-        role: user.role,
-        time: new Date()
-    })
-}
-
-export const emitSlotCreated = (slot) => {
-    io.emit('slot_created', {
-        message: 'New slot available',
-        slot
-    })
-}
-
-export const emitAppointmentBooked =(appointment) => {
-    io.emit('appointment_booked', {
-        message: 'New appointment booked',
-        appointment
-    })
-}
-
-export const emitAppointmentCancelled = (appointmentId) => {
-    io.emit('appointment_cancelled', {
-        message: 'appointment cancelled',
-        appointmentId
-    })
-}
+  if (socketId) {
+    io.to(socketId).emit('notification', {
+      message,
+      time: new Date()
+    });
+  }
+};

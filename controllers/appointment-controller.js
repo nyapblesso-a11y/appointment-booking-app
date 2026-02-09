@@ -4,6 +4,8 @@ import {
   getProviderAppointments,
   cancelUserAppointment,
 } from '../services/appointment-services.js';
+ import { io } from '../bin/www';
+ import { sendNotification } from '../sockets/socket.js';
 
 // POST /app
 export const createAppointment = async (req, res, next) => {
@@ -43,7 +45,10 @@ export const cancelAppointment = async (req, res, next) => {
   try {
     const { id } = req.params;
     const appointment = await cancelUserAppointment(req.user.id, id, req.user.role);
+
+   sendNotification(io, appointment, '')
     res.json({ success: true, message: 'Appointment canceled', appointment });
+    
   } catch (error) {
     next(error);
   }

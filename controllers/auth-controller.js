@@ -4,6 +4,9 @@ import { createProvider } from '../models/provider-model.js';
 import { hashPassword, comparePassword } from '../utils/passward.js';
 import { isValidEmail, isValidPassword, isValidRole } from '../utils/validators.js';
 import { signToken } from "../config/jwt.js";
+import { sendNotification } from '../sockets/socket.js';
+import { io } from '../bin/www';
+
 
 export const register = async (req, res, next) => {
   try {
@@ -55,6 +58,10 @@ export const login = async (req, res, next) => {
       id: user.id,
       role: user.role,
     });
+
+    sendNotification(io, user.id, 'Login successfull')
+
+    // console.log("congrats: user successfully logged-in")
 
     res.json({ success: true,
        token });

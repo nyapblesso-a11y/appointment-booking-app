@@ -4,17 +4,22 @@ import {
   getAppointmentsByProvider,
   cancelAppointment as cancelAppointmentModel,
 } from '../models/appointment-model.js';
-
+ import {sendNotification} from '../sockets/socket.js'
 import { getSlotById, markSlotAsBooked } from '../models/slot-model.js';
+import { io } from '../bin/www';
 
 export const bookAppointment = async (clientId, slotId) => {
   const slot = await getSlotById(slotId);
   if (!slot) throw new Error('Slot not found');
   if (slot.is_booked) throw new Error('Slot already booked');
-
+  
   const appointment = await createAppointmentModel(clientId, slot.provider_id, slotId);
 
   await markSlotAsBooked(slotId);
+
+  sendNotification (
+    io, slot.provider_id, 'You have a new appointment booking'
+  )
 
   return appointment;
 };
