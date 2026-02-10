@@ -6,7 +6,7 @@ import {
 } from '../services/appointment-services.js';
  import { io } from '../bin/www';
  import { sendNotification } from '../sockets/socket.js';
-
+import logger from '../utils/logger.js';
 // POST /app
 export const createAppointment = async (req, res, next) => {
   try {
@@ -14,6 +14,7 @@ export const createAppointment = async (req, res, next) => {
     if (!slot_id) return res.status(400).json({ message: 'slotId is required' });
 
     const appointment = await bookAppointment(req.user.id, slot_id);
+    logger.info("appointment successfully created")
     res.status(201).json({ success: true, appointment });
   } catch (error) {
     next(error);
@@ -45,8 +46,8 @@ export const cancelAppointment = async (req, res, next) => {
   try {
     const { id } = req.params;
     const appointment = await cancelUserAppointment(req.user.id, id, req.user.role);
-
-   sendNotification(io, appointment, '')
+      logger.info('Appoimtment cancelled')
+  //  sendNotification(io, appointment, '')
     res.json({ success: true, message: 'Appointment canceled', appointment });
     
   } catch (error) {
