@@ -7,7 +7,7 @@
 # HOW TO USE THE SERVICE: on this platform we have tow users the clinet who books available appointments and the Provider who create slots so that appointments coool be booked by the client
 - So now you regiter as either a client or as  provider you can test the routes either oon thunder client which I used, using  a POST request to this http://localhost:3000/auth/register
 as a client you need the folloeing credentials *{name, email, password, role(optional)}* all these  as an object. Then role is actulally optional because by default yoy registr without a role you are automatically a client
--registering a  provider: registering as a provider required *{name, email, password, role(required)}* as a provider you need to provide the role or services you offer be it Doctor, Dental services jsut to name  few
+-registering a  provider: registering as a provider required *{name, email, password, role(required), service_name}* as a provider you need to provide the role and  services you offer be it Doctor, Dental services jsut to name  few which is the sevice_name
 
 -now after registering , you'll be given token which will be used to l0ogin with *{email, password}* with a POST request to http://localhost:3000/auth/login.  note: sice it is local host all this can onl work on the device it was created on
 
