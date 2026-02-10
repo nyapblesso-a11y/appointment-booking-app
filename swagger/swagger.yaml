@@ -1,4 +1,4 @@
-openapi: 5.0.1
+openapi: 3.0.0
 info:
   title: appointment_booking_service
   description: Backend service for scheduling appointments with real-time notifications
