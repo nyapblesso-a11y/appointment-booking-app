@@ -1,9 +1,12 @@
 import { verifyToken } from '../config/jwt.js';
+import logger from '../utils/logger.js';
+
 
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    logger.warn("Authenticaton required")
     return res.status(401).json({
       message: 'Authentication required',
     });
@@ -16,6 +19,7 @@ export const authenticate = (req, res, next) => {
     req.user = decoded; 
     next();
   } catch (error) {
+    logger.warn('Invalid or expired token')
     return res.status(401).json({
       message: 'Invalid or expired token',
     });
