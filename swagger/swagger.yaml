@@ -5,7 +5,7 @@ info:
   version: 0.0.0
 
 servers:
-  - url: http://localhost:3000
+  - url: postgresql://booking_appointment_lg40_user:Syb6pGmoqzzImYIY4fevhrXL4JuoLe6O@dpg-d67jmm248b3s73cci8hg-a.oregon-postgres.render.com/booking_appointment_lg40
 
 components:
   securitySchemes:
