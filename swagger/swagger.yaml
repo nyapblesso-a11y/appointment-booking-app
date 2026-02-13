@@ -6,6 +6,8 @@ info:
 
 servers:
   - url: https://appointment-booking-app-yhut.onrender.com
+
+components:
   securitySchemes:
     BearerAuth:
       type: http
@@ -60,6 +62,7 @@ servers:
         created_at:
           type: string
           format: date-time
+
 
 paths:
 
