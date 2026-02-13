@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import  {pool} from '../config/db.js';
 
 // Create a new slot for a provider
 export const createSlot = async ({ provider_id, start_time, end_time }) => {

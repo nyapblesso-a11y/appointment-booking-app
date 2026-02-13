@@ -1,4 +1,4 @@
-import { pool } from '../config/db.js';
+import  {pool}  from '../config/db.js';
 
 export const createProvider = async ({user_id, service_name}) => {
   const query = `
