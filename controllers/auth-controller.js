@@ -52,7 +52,6 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password)
-        logger.warn(`please! email and password required`);
       return res.status(400).json({ message: "Email & password required" });
     
     if (!isValidEmail(email))

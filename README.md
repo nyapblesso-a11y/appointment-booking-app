@@ -27,3 +27,6 @@ _** As the client view avaialable slots with the provider he/she is interested, 
  so the above is just a brief description on how the app works and how you go about it but for more detail user interface and info you can visit a docs for this project
 
  http://localhost:3000/api-docs
+
+ # Clone repository
+  bash `git clone git@github.com:nyapblesso-a11y/appointment-booking-app.git`
