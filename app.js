@@ -14,7 +14,6 @@ import slotRouter from './routes/slot-routes.js'
 const app = express();
 const swaggerDocument = YAML.load('./swagger/swagger.yaml')
 
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -7,9 +7,7 @@ info:
 servers:
   - url: https://appointment-booking-app-yhut.onrender.com
     description: Production server
-    url: http://localhost:3000
-    description: Local development server
-
+  
 components:
   securitySchemes:
     BearerAuth:
