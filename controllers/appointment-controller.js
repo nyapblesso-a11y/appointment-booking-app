@@ -4,20 +4,29 @@ import {
   getProviderAppointments,
   cancelUserAppointment,
 } from '../services/appointment-services.js';
- import { io } from '../bin/www';
- import { sendNotification } from '../sockets/socket.js';
-import logger from '../utils/logger.js';
+import { logger } from '../utils/logger.js';
+
 // POST /app
 export const createAppointment = async (req, res, next) => {
   try {
-    const { slot_id } = req.body;
-    if (!slot_id) return res.status(400).json({ message: 'slotId is required' });
+    const { slotId } = req.body;
 
-    const appointment = await bookAppointment(req.user.id, slot_id);
-    logger.info("appointment successfully created")
-    res.status(201).json({ success: true, appointment });
+    if (!slotId) {
+      return res.status(400).json({ message: 'slotId is required' });
+    }
+
+    const appointment = await bookAppointment(req.user.id, slotId);
+
+    return res.status(201).json({
+      success: true,
+      appointment
+    });
+
   } catch (error) {
-    next(error);
+    console.error("APPOINTMENT ERROR:", error);
+    return res.status(500).json({
+      message: error.message
+    });
   }
 };
 
@@ -47,7 +56,7 @@ export const cancelAppointment = async (req, res, next) => {
     const { id } = req.params;
     const appointment = await cancelUserAppointment(req.user.id, id, req.user.role);
       logger.info('Appoimtment cancelled')
-  //  sendNotification(io, appointment, '')
+
     res.json({ success: true, message: 'Appointment canceled', appointment });
     
   } catch (error) {

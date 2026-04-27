@@ -7,9 +7,8 @@ import {
   isValidRole,
 } from "../utils/validators.js";
 import { signToken } from "../config/jwt.js";
-import { sendNotification } from "../sockets/socket.js";
-import { io } from "../bin/www";
-import logger from "../utils/logger.js";
+
+
 
 export const register = async (req, res, next) => {
   try {
@@ -39,12 +38,11 @@ export const register = async (req, res, next) => {
     if (role === "provider") {
       await createProvider({ user_id: user.id, service_name });
     }
-    logger.info(`${user.name} has successfully register`);
     res.status(201).json({ message: "User registered", user });
   } catch (error) {
     next(error);
   }
-  console.log("REQ BODY:", req.body);
+console.log("REGISTER HIT:", req.body);
 };
 
 export const login = async (req, res, next) => {
@@ -68,12 +66,15 @@ export const login = async (req, res, next) => {
       role: user.role,
     });
 
-    sendNotification(io, user.id, "Login successfull");
 
     // console.log("congrats: user successfully logged-in")
-     logger.info (`Great! ${user.name}, you have succesfully logged-in now you can create a slot or book an appointment`)
+    
     res.json({ success: true, token });
   } catch (error) {
-    next(error);
+    console.error("AUTH ERROR:", error);  // 👈 ADD THIS
+  return res.status(500).json({
+    message: error.message,
+    stack: error.stack
+  });
   }
 };

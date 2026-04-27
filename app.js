@@ -32,13 +32,13 @@ app.use(function(req, res, next) {
 app.use(function (err, req, res, next) {
   const statusCode = err.status || 500;
   res.status(statusCode);
-  res.send({
-    error: {
-      status: statusCode,
-      message: err.message,
-      stack: req.app.get('env') === 'development' ? err.stack : {}
-    }
-  });
+ res.send({
+  error: {
+    status: statusCode,
+    message: err.message,
+    stack: err.stack
+  }
+});
 });
 
 export default app;

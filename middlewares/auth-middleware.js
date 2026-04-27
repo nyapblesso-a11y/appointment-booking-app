@@ -1,6 +1,4 @@
 import { verifyToken } from "../config/jwt.js";
-import logger from "../utils/logger.js";
-
 export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

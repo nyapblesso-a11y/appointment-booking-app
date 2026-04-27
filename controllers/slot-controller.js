@@ -1,7 +1,6 @@
 import { createSlot, getSlotsByProviderId } from '../models/slot-model.js';
 import { getProviderByUserId } from '../models/provider-model.js';
-import { io } from '../bin/www';
-import { sendNotification } from '../sockets/socket.js';
+
 // Provider creates a new time slot
 export const createTimeSlot = async (req, res, next) => {
   try {
@@ -22,7 +21,6 @@ export const createTimeSlot = async (req, res, next) => {
       end_time
     });
 
-    sendNotification(io, provider.user_id, 'New slot created successfully');
 
     res.status(201).json({ success: true, slot });
   } catch (error) {
