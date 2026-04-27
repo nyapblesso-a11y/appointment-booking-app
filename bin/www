@@ -44,15 +44,15 @@ io.on('connection', (socket) => {
  */
 (async () => {
   try {
-    // 1️⃣ Connect to database
+    //  Connect to database
     await connectDB();
     console.log(" Database connected");
 
-    // 2️⃣ Create tables if they don’t exist (VERY IMPORTANT for Render)
+    //  Create tables if they don’t exist (VERY IMPORTANT for Render)
     await initDB();
     console.log(" Tables verified/created");
 
-    // 3️⃣ Start server ONLY after DB is ready
+    //  Start server ONLY after DB is ready
     server.listen(port, () => {
       console.log(` Server running on port ${port}`);
     });
