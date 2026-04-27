@@ -1,34 +1,73 @@
-// import request from 'supertest';
-// import app from '../../app.js';
-// import { describe, test, expect } from '@jest/globals';
+import request from 'supertest';
+import app from '../../app.js';
+import { describe, test, expect, beforeAll } from '@jest/globals';
 
-// let clientToken;
-// let slotId;
+let clientToken;
+let providerToken;
+let slotId;
 
-// beforeAll(async () => {
-//   const login = await request(app)
-//     .post('/auth/login')
-//     .send({
-//       email: 'client@test.com',
-//       password: 'password123'
-//     });
+beforeAll(async () => {
 
-//   clientToken = login.body.token;
+  // create provider
+  const providerEmail = `provider${Date.now()}@test.com`;
 
-//   const slots = await request(app)
-//     .get('/slot');
+  await request(app).post('/auth/register').send({
+    name: 'Provider',
+    email: providerEmail,
+    password: 'password123',
+    role: 'provider',
+    service_name: 'Dentist'
+  });
 
-//   slotId = slots.body.slots[0].id;
-// });
+  const providerLogin = await request(app)
+    .post('/auth/login')
+    .send({
+      email: providerEmail,
+      password: 'password123'
+    });
 
-// describe('Appointments', () => {
-//   test('client books appointment', async () => {
-//     const res = await request(app)
-//       .post('/app')
-//       .set('Authorization', `Bearer ${clientToken}`)
-//       .send({ slotId });
+  providerToken = providerLogin.body.token;
 
-//     expect(res.statusCode).toBe(201);
-//     expect(res.body.appointment).toBeDefined();
-//   });
-// });
+  // create slot
+  const slotRes = await request(app)
+    .post('/slot')
+    .set('Authorization', `Bearer ${providerToken}`)
+    .send({
+      start_time: '2026-02-10T11:00:00',
+      end_time: '2026-02-10T11:30:00'
+    });
+
+  slotId = slotRes.body.slot.id;
+
+  // create client
+  const clientEmail = `client${Date.now()}@test.com`;
+
+  await request(app).post('/auth/register').send({
+    name: 'Client',
+    email: clientEmail,
+    password: 'password123',
+    role: 'client'
+  });
+
+  const clientLogin = await request(app)
+    .post('/auth/login')
+    .send({
+      email: clientEmail,
+      password: 'password123'
+    });
+
+  clientToken = clientLogin.body.token;
+});
+
+describe('Appointments', () => {
+
+  test('client books appointment', async () => {
+    const res = await request(app)
+      .post('/app')
+      .set('Authorization', `Bearer ${clientToken}`)
+      .send({ slotId });
+
+    expect(res.statusCode).toBe(201);
+  });
+
+});
