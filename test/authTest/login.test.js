@@ -3,11 +3,21 @@ import app from '../../app.js';
 import { describe, test, expect } from '@jest/globals';
 
 describe('Auth-Login', () => {
+
   test('login returns JWT token', async () => {
+    const email = `login${Date.now()}@test.com`;
+
+    // create user 
+    await request(app).post('/auth/register').send({
+      name: 'Test User',
+      email,
+      password: 'password123'
+    });
+
     const res = await request(app)
       .post('/auth/login')
       .send({
-        email: 'client@test.com',
+        email,
         password: 'password123'
       });
 
@@ -19,10 +29,11 @@ describe('Auth-Login', () => {
     const res = await request(app)
       .post('/auth/login')
       .send({
-        email: 'client@test.com',
+        email: 'wrong@test.com',
         password: 'wrongpassword'
       });
 
     expect(res.statusCode).toBe(401);
   });
+
 });
