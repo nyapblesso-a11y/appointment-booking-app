@@ -1,31 +1,40 @@
-// import request from 'supertest';
-// import app from '../../app.js';
-// import { describe, test, expect } from '@jest/globals';
+import request from 'supertest';
+import app from '../../app.js';
+import { describe, test, expect, beforeAll } from '@jest/globals';
 
-// let providerToken;
+let providerToken;
 
-// beforeAll(async () => {
-//   const login = await request(app)
-//     .post('/auth/login')
-//     .send({
-//       email: 'provider@test.com',
-//       password: 'password123'
-//     });
+beforeAll(async () => {
+  const email = `provider${Date.now()}@test.com`;
 
-//   providerToken = login.body.token;
-// });
+  await request(app).post('/auth/register').send({
+    name: 'Provider',
+    email,
+    password: 'password123',
+    role: 'provider',
+    service_name: 'Dentist'
+  });
 
-// describe('Slots', () => {
-//   test('provider creates a slot', async () => {
-//     const res = await request(app)
-//       .post('/slot')
-//       .set('Authorization', `Bearer ${providerToken}`)
-//       .send({
-//         start_time: '2026-02-10T10:00:00',
-//         end_time: '2026-02-10T10:30:00'
-//       });
+  const login = await request(app)
+    .post('/auth/login')
+    .send({
+      email,
+      password: 'password123'
+    });
 
-//     expect(res.statusCode).toBe(201);
-//     expect(res.body.slot).toBeDefined();
-//   });
-// });
+  providerToken = login.body.token;
+});
+
+describe('Slots', () => {
+  test('provider creates a slot', async () => {
+    const res = await request(app)
+      .post('/slot')
+      .set('Authorization', `Bearer ${providerToken}`)
+      .send({
+        start_time: '2026-02-10T10:00:00',
+        end_time: '2026-02-10T10:30:00'
+      });
+
+    expect(res.statusCode).toBe(201);
+  });
+});
