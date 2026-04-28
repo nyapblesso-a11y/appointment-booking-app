@@ -30,6 +30,9 @@ export const createAppointment = async (req, res, next) => {
   }
 };
 
+
+
+
 // GET /app/client
 export const viewClientAppointments = async (req, res, next) => {
   try {
