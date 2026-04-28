@@ -11,10 +11,16 @@ import { authorizeRole } from '../middlewares/role-middleware.js';
 
 const router = express.Router();
 
+// Client books appointment
 router.post('/', authenticate, authorizeRole('client'), createAppointment);
+
+// Client views own appointments
 router.get('/client', authenticate, authorizeRole('client'), viewClientAppointments);
+
+// Provider views their appointments
 router.get('/provider', authenticate, authorizeRole('provider'), viewProviderAppointments);
-router.patch('/:id/cancel', authenticate, cancelAppointment);
 
-export default router;
+// Cancel appointment (both roles allowed)
+router.patch('/:id/cancel', authenticate, authorizeRole('client', 'provider'), cancelAppointment);
 
+export default router; 
