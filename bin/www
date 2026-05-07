@@ -23,15 +23,9 @@ export const io =  initIO(server);
 
 
 io.on("connection", (socket) => {
-  console.log("Socket connected:", socket.id);
-
 
   socket.on("register", (userId) => {
     registerSocket(userId, socket.id);
-
-    console.log(
-      `User ${userId} registered with socket ${socket.id}`
-    );
   });
 
 
@@ -52,11 +46,7 @@ export const startServer = async () => {
 
     await initDB();
 
-    server.listen(port, () => {
-      console.log(
-        `Server running on port ${port}`
-      );
-    });
+    server.listen(port);
 
   } catch (error) {
 
