@@ -3,27 +3,23 @@ import { env } from "./env.js";
 
 const { Pool } = pkg;
 
-export const pool = new Pool(
-  env.DATABASE_URL
-    ? {
-        connectionString: env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-      }
-    : {
-        host: env.DB_HOST,
-        port: Number(env.DB_PORT || 5432),
-        user: env.DB_USER,
-        password: env.DB_PASSWORD,
-        database: env.DB_NAME,
-      }
-);
+// HARD CHECK (prevents silent crashes)
+if (!env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing in environment variables");
+}
+
+export const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
+});
 
 export const connectDB = async () => {
   try {
     const client = await pool.connect();
-
-    console.log("✅ PostgreSQL connected");
-
+    console.log("✅ PostgreSQL connected successfully");
     client.release();
   } catch (error) {
     console.error("❌ PostgreSQL connection failed:", error);
