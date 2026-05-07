@@ -1,93 +1,80 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
 import app from "../app.js";
 import http from "http";
+
 import { connectDB } from "../config/db.js";
-import { initSocket } from "../sockets/socket.js";
 import { initDB } from "../config/initDB.js";
 
-export const startServer = async () => {
-  const port = process.env.PORT || 3000;
+import { Server } from "socket.io";
 
-  const server = http.createServer(app);
-  initSocket(server);
+import {
+  registerSocket,
+  removeSocket,
+} from "../sockets/socket.js";
+
+const port = process.env.PORT || 3000;
+
+const server = http.createServer(app);
+
+
+// ✅ export io globally
+export const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+
+// ✅ THIS WAS MISSING
+io.on("connection", (socket) => {
+  console.log("Socket connected:", socket.id);
+
   
+  // frontend sends userId after login
+  socket.on("register", (userId) => {
+    registerSocket(userId, socket.id);
+
+    console.log(
+      `User ${userId} registered with socket ${socket.id}`
+    );
+  });
+
+
+  socket.on("disconnect", () => {
+    removeSocket(socket.id);
+
+    console.log(
+      "Socket disconnected:",
+      socket.id
+    );
+  });
+});
+
+
+export const startServer = async () => {
   try {
     await connectDB();
+
     await initDB();
 
     server.listen(port, () => {
-      console.log(`Server running on port ${port}`);
+      console.log(
+        `Server running on port ${port}`
+      );
     });
+
   } catch (error) {
-    console.error("Server startup failed:", error);
+
+    console.error(
+      "Server startup failed:",
+      error
+    );
+
     process.exit(1);
   }
 };
 
-// app.listen(port, '0.0.0', () => {
-//   console.log(`Server is runnig on port ${}`)
-// })
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError(error) {
-  if (error.syscall !== "listen") {
-    throw error;
-  }
-
-  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case "EACCES":
-      console.error(bind + " requires elevated privileges");
-      process.exit(1);
-      break;
-    case "EADDRINUSE":
-      console.error(bind + " is already in use");
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  debug("Listening on " + bind);
-}
 
 if (process.env.NODE_ENV !== "test") {
   startServer();

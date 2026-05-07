@@ -1,26 +1,33 @@
-let io = null;
+const connectedUsers = new Map();
 
-export const initSocket = async(server) => {
-  const { Server } = await import('socket.io');
-
-  io = new Server(server, {
-    cors: { origin: '*' }
-  });
-
-  io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
-
-    socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
-    });
-  });
-
-  return io;
+// userId  socketId
+export const registerSocket = (userId, socketId) => {
+  connectedUsers.set(Number(userId), socketId);
 };
 
-export const getIO = () => {
-  if (!io) {
-    throw new Error('Socket.io not initialized');
+// remove disconnected socket
+export const removeSocket = (socketId) => {
+  for (const [userId, id] of connectedUsers.entries()) {
+    if (id === socketId) {
+      connectedUsers.delete(userId);
+      break;
+    }
   }
-  return io;
+};
+
+// emit notification
+export const sendNotification = (
+  io,
+  userId,
+  message,
+  data = {}
+) => {
+  const socketId = connectedUsers.get(Number(userId));
+
+  if (!socketId) return;
+
+  io.to(socketId).emit('notification', {
+    message,
+    ...data
+  });
 };
