@@ -1,22 +1,23 @@
 openapi: 3.0.0
 info:
-  title: appointment_booking_service
+  title: Appointment Booking Service
   description: Backend service for scheduling appointments with real-time notifications
-  version: 0.0.0
+  version: 1.0.0
 
 servers:
+  - url: http://localhost:3000
+    description: Local server
   - url: https://appointment-booking-app-yhut.onrender.com
     description: Production server
-  
+
 components:
   securitySchemes:
-    BearerAuth: 
+    BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
   schemas:
-
     User:
       type: object
       properties:
@@ -64,9 +65,12 @@ components:
           type: string
           format: date-time
 
+security:
+  - BearerAuth: []
 
 paths:
 
+ 
   /auth/register:
     post:
       summary: Register new user
@@ -116,6 +120,7 @@ paths:
         200:
           description: Returns JWT token
 
+
   /slot:
     post:
       summary: Create time slot (Provider only)
@@ -140,16 +145,33 @@ paths:
         201:
           description: Slot created
 
+  /slot/me:
     get:
-      summary: Get provider slots
+      summary: Get provider's own slots
       tags: [Slots]
       security:
         - BearerAuth: []
       responses:
         200:
-          description: List of slots
+          description: Provider slots list
 
-  /appointments:
+  /slot/{providerId}:
+    get:
+      summary: Get public slots for a provider
+      tags: [Slots]
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: providerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Public provider slots
+
+  /app:
     post:
       summary: Book appointment (Client only)
       tags: [Appointments]
@@ -169,7 +191,7 @@ paths:
         201:
           description: Appointment booked
 
-  /appointments/client:
+  /app/client:
     get:
       summary: View client appointments
       tags: [Appointments]
@@ -179,7 +201,7 @@ paths:
         200:
           description: Client appointments list
 
-  /appointments/provider:
+  /app/provider:
     get:
       summary: View provider appointments
       tags: [Appointments]
@@ -189,7 +211,7 @@ paths:
         200:
           description: Provider appointments list
 
-  /appointments/{id}/cancel:
+  /app/{id}/cancel:
     patch:
       summary: Cancel appointment
       tags: [Appointments]
