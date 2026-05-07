@@ -9,21 +9,69 @@ import {
   getSlotById,
   markSlotAsBooked
 } from '../models/slot-model.js';
+import { getProviderById } from '../models/provider-model.js';
+import { getIO } from '../sockets/io.js';
+
+import { sendNotification } from "../sockets/socket.js";
+
 
 // BOOK APPOINTMENT
-export const bookAppointment = async (clientId, slotId) => {
-  const slot = await getSlotById(slotId);
+export const bookAppointment = async (
+  clientId,
+  slotId
+) => {
 
-  if (!slot) throw new Error('Slot not found');
-  if (slot.is_booked) throw new Error('Slot already booked');
-
-  const appointment = await createAppointmentModel(
-    clientId,
-    slot.provider_id,
+  const slot = await getSlotById(
     slotId
   );
 
-  await markSlotAsBooked(slotId);
+  if (!slot) {
+    throw new Error(
+      'Slot not found'
+    );
+  }
+
+  if (slot.is_booked) {
+    throw new Error(
+      'Slot already booked'
+    );
+  }
+
+
+  const appointment =
+    await createAppointmentModel(
+      clientId,
+      slot.provider_id,
+      slotId
+    );
+
+
+  await markSlotAsBooked(
+    slotId
+  );
+
+
+
+  const provider =
+    await getProviderById(
+      slot.provider_id
+    );
+
+
+  const io = getIO();
+
+
+  sendNotification(
+    io,
+    provider.user_id,
+    'You have a new appointment booking',
+    {
+      appointmentId:
+        appointment.id,
+      slotId
+    }
+  );
+
 
   return appointment;
 };

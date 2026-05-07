@@ -5,8 +5,7 @@ import http from "http";
 
 import { connectDB } from "../config/db.js";
 import { initDB } from "../config/initDB.js";
-
-import { Server } from "socket.io";
+import { initIO } from "../sockets/io.js";
 
 import {
   registerSocket,
@@ -18,20 +17,15 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 
-// ✅ export io globally
-export const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
+
+export const io =  initIO(server);
 
 
-// ✅ THIS WAS MISSING
+
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
 
-  
-  // frontend sends userId after login
+
   socket.on("register", (userId) => {
     registerSocket(userId, socket.id);
 
