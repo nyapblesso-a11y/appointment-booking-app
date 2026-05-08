@@ -68,6 +68,8 @@ providers
 time_slots
 appointments
 
+
+## auth API
  Authentication
 Register
 POST /auth/register
@@ -77,6 +79,8 @@ POST /auth/register
   "password": "123456",
   "role": "client"
 }
+
+#LOGIN
 Login
 POST /auth/login
 {
@@ -103,7 +107,9 @@ Get provider slots
 GET /slot/me
 Public slots
 GET /slot/:providerId
-📌 Appointments API
+
+## Appointment API
+ Appointments API
 Book appointment
 POST /app
 Authorization: Bearer <token>
